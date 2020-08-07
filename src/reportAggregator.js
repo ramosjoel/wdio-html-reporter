@@ -26,6 +26,21 @@ function  walk(dir, extensions , filelist = []) {
     return filelist;
 }
 
+function deleteFolderRecursive(folder) {
+    if (fs.existsSync(folder)) {
+        fs.readdirSync(folder).forEach((file, index) => {
+            const curPath = path.join(folder, file);
+            if (fs.lstatSync(curPath).isDirectory()) {
+                deleteFolderRecursive(curPath);
+            } else {
+                fs.unlinkSync(curPath);
+            }
+        });
+        fs.rmdirSync(folder);
+    }
+};
+
+
 class ReportAggregator {
 
     constructor(opts) {
@@ -48,7 +63,7 @@ class ReportAggregator {
     }
 
     clean() {
-        fs.emptyDirSync(this.options.outputDir);
+        deleteFolderRecursive(this.options.outputDir);
     }
 
 
